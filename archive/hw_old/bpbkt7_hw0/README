@@ -1,0 +1,7 @@
+Hey,
+
+To execture this program, just type make it runs on 1k automatically.
+to change to 1m type ./hw0 /content/cs/hpc/data/sp14_1m.csv
+
+or change it in the make file...
+
