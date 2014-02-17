@@ -22,7 +22,7 @@ clean:
 	@for dir in $(SUBDIRS); do \
 		$(MAKE) -C $$dir clean; \
 	done
-	@rm -rf *.o cachegrind* hw2 2>/dev/null || true
+	@rm -rf *.o cachegrind* hw 2>/dev/null || true
 
 
 

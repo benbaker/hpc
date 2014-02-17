@@ -20,30 +20,35 @@
 #include <algorithm>
 #include "rvec.hpp"
 
+#define V_SIZE  4
+#define V_COUNT 10
+static const int sizes[] = {16,2,77,29};
+
+
 // -----------------------------------------------------------------------------
 // Classes
 // -----------------------------------------------------------------------------
 
+
 class SV {
   public:
+    std::vector<float> searchVector;
     short size, findCount;
-    SV() {
-        size=100;
-        findCount=10;
+    SV(){ 
+        size = V_SIZE; findCount = V_COUNT;
+        searchVector = generateRandomVector(size);
     }
-    int getSize() { return size; }
+    std::vector<float> sv() { return searchVector; }
 };
 
-// class SVD {
-//   public:
-//     float x,y,size;
-//     short findCount;
-
-//     SV() {
-//          m_nNumerator = 0;
-//          m_nDenominator = 1;
-//     }
-// };
+class SVV {
+  public:
+    std::vector<std::vector<float>> V;
+    float distance;
+    SVV(){ 
+            
+        }
+};
 
 
 
@@ -54,31 +59,63 @@ class SV {
 
 int main( int argc, char **argv ){
 
-    // Get start time
-    std::chrono::high_resolution_clock::time_point start 
-        = std::chrono::high_resolution_clock::now();
 
     SV sv;
-    std::cout << sv.getSize() << std::endl;
-
-    std::vector<float> test = generateRandomVector(2000);
+    std::vector<float> test = sv.sv();
     for(size_t i = 0; i < test.size(); ++i){
-       std::cout << test[i] << std::endl;
+       std::cout << test[i] << " ";
     }
 
 
+    SV sv2;
+    test = sv2.sv();
+    for(size_t i = 0; i < test.size(); ++i){
+       std::cout << test[i] << " ";
+    }
+    // stopwatch
 
-    // Get stop time
-    std::chrono::high_resolution_clock::time_point stop 
-        = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> time_span 
-        = std::chrono::duration_cast<std::chrono::duration<double> >
-        (stop - start);
 
-    // if(argc < 2){ std::cout << "Provide filename\n"; return 1;}
+
+
+    // stopwatch
+
     return 0;
 }
 
 
+
+
+
+
+
+
+
+// The goal is to accelerate the search of a single vector against the whole dataset. Your program must be
+// structured as the following algorithm for generating timing results:
+// 1: Load data, D, from file into Shared Memory
+    // 2: for Each vector size 9;11;17;29 do
+        // 3: Run Test Vector against circularSubvectorMatch(Ts, D=P, N) . Verify and display self test results
+        // 4: Generate V as a set of 30 random vectors of length s
+        // 5: for Each vector v 2 V do
+        // 6: Using P parallel processes
+        // 7: circularSubvectorMatch(s, D=P, N)
+        // 8: . where D=P is an even portion of D searched by one of the P processes
+        // 9: Merge P Partial Results
+        // 10: . Alternative to Merge, you can use Shared Memory and Mutex to merge results during searching
+        // 11: Report Search Time for v
+        // 12: Report Match Results for v
+        // 13: end for
+    // 14: end for
+// 15: Free and Release Shared Memory
+// 16: Report average search time for each size, s.
+// Your output will be formatted as shown below, to include the test vector, time, and rank-ordered top-ten matched
+// Dissimilarity:X:Y:Oset, assuming N = 10.
+// Search Vector: comma_separated_search_values
+// Time (s) : ???
+// Results:
+// 1. dissimilarity1:X1:Y1:Offset1
+// 2. dissimilarity2:X2:Y2:Offset2
+// . . .
+// 10. dissimilarity10:X10:Y10:Offset10
 
 
