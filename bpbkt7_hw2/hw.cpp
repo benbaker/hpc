@@ -19,10 +19,11 @@
 #include <iterator>
 #include <algorithm>
 #include "rvec.hpp"
+#include "stopwatch.hpp"
 
-#define BIG_V_SIZE  4
-#define LITTLE_V_SIZE 3
-#define R_COUNT 2
+#define BIG_V_SIZE  3
+#define LITTLE_V_SIZE 72
+#define RV_COUNT 5
 
 
 // -----------------------------------------------------------------------------
@@ -58,7 +59,7 @@
 //     }
 // };
 
-std::string br = "\n#######################";
+std::string br = "\n###";
 
 // -----------------------------------------------------------------------------
 // Main
@@ -66,78 +67,75 @@ std::string br = "\n#######################";
 
 int main( int argc, char **argv ){
 
-	 std::vector<float> SV = generateRandomVector(BIG_V_SIZE);
-	 std::vector<std::vector<float>> V(LITTLE_V_SIZE);
-	 V.reserve(R_COUNT * LITTLE_V_SIZE);
+// -----------------------------------------------------------------------------
+// Instantiate text vector, Big V vector, and array of vector sizes.
+// -----------------------------------------------------------------------------
+   std::vector<float> SV = generateRandomVector(BIG_V_SIZE);
+   std::vector<float> TV(LITTLE_V_SIZE);
+
+   std::vector<std::vector<float>> V(LITTLE_V_SIZE * BIG_V_SIZE);
+   std::vector<std::vector<float>> RV(LITTLE_V_SIZE * RV_COUNT);
 
    static const int vectorSize[] = {9,11,17,29};
+   
+   Stopwatch timer;
 
-   // for each vector size
+   // For each circular search vector size
    for(int l=0; l < 4; l++){
+      std::cout << br << "\nCircular Search Size: " << vectorSize[l] << "\n";
 
-        std::cout << br << "Circular Search Size: " << vectorSize[l] << "\n";
+      // Big V
+      for(size_t v = 0; v < BIG_V_SIZE; v++){
+         std::cout << "V[" << v << "] - circularSize: " << LITTLE_V_SIZE + vectorSize[l] << "\n";
+         V[v] = generateRandomVector(BIG_V_SIZE);
+         
+         // little v 
+			for(int i = 0; i < LITTLE_V_SIZE + vectorSize[l]; i++){
 
-        // BIG V
-		  for(size_t v = 0; v < V.size(); v++){
-				
-            std::cout << "V[" << v << "] - circularSize: " << LITTLE_V_SIZE +  vectorSize[l] << "\n";
-            V[v] = generateRandomVector(BIG_V_SIZE);
+            std::cout << i << ":" << i%LITTLE_V_SIZE << ":" << V[v][i%LITTLE_V_SIZE] << ", ";
 
-
-
-            // LITTLE V
-				for(int i = 0; i < LITTLE_V_SIZE + vectorSize[l]; i++){
-					 
-
-
-			      std::cout << " " << ", " << V[v][i%vectorSize[l]];
-
-
-
-
-				}
-               std::cout << "\n";
-				
-				// std::cout << "\n\n";
-		  }
-	 }
-
-	 // stopwatch
+            TV[i%vectorSize[l]] = V[v][i%LITTLE_V_SIZE];
+			}
+         std::cout << "\n";
+      }
+   }
 
 
 
-	 // int l=4;
-	 // while(l--){
-	 //     std::cout << vectorSize[l] << "\n";
-	 //     for(size_t i = V.size(); i; --i){
-				
-	 //         std::vector<float> SV = generateRandomVector(BIG_V_SIZE);
-	 //         for(size_t ii = 0; ii < SV.size(); ++ii){
-	 //            // std::cout << SV[ii];
-	 //         }
-	 //         // std::cout << "\n\n";
-	 //     }
-	 // }
 
-
-	 // OrderedResultSet circularSubvectorMatch(searchVector, circularDataset, N)
-
-
-	 // stopwatch
-	 
-	 std::cout << "\n";
-
-	 return 0;
+	 timer.stop();
+    std::cout << "\n\noperation took " << timer.total() << " seconds\n";
+	 return 1;
 }
 
 
+// Oh yeah, and you can overload the print function (cout <<) with this :
+// ostream& operator<<(ostream& os, const SearchVectorDataPoint& sv){...}
+// then inside: { os << sv.distance << endl;  } or whatever
+// so then you can just print them like:
+// std::cout << “this data point is: “ << *sv_pntr; or whatever.
+
+
+// std::vector<int> data(10);
+// for (int i = 0 ; i < 100 ; ++i){
+//     data[i%10] = i;
+// }
+// for (std::vector<int>::const_iterator it = data.begin() ; it !=data.end(); ++it){
+//      std::cout << *it << std::endl;
+// }
+
+
+// load D -> shared memory
+// for each vector sizes 9 11 17 29
+// test vector against circularSubvectorMatch(Ts, D=P, N)
+// foreach V[v] 
+// use P processes
+// circularsubvectormatch()
 
 
 
 
-// The goal is to accelerate the search of a single vector against the whole dataset. 
-// Your program must be
-// structured as the following algorithm for generating timing results:
+
 // 1: Load data, D, from file into Shared Memory
 	 // 2: for Each vector size 9;11;17;29 do
 		  // 3: Run Test Vector against circularSubvectorMatch(Ts, D=P, N) . 
