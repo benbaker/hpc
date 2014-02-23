@@ -1,11 +1,10 @@
 OPT = -std=c++0x
-TEST = ./hw
+TEST = ./hw /content/cs/hpc/data/sp14_1k.csv
 OTHER_FLAGS=$(ENV_HPC_OPTS) 
 GOOD = -O -funroll-loops -march=native -fstrict-aliasing
 
 OFLAGS = -Wall -c $(OPT)
 CFLAGS = -Wall $(OPT)
-
 
 all: hw
 	@$(TEST)
@@ -13,8 +12,8 @@ all: hw
 # $@ matches target; $< matches first dependent
 #	g++ $@ -o $< -std=c++0x
 
-hw: hw.o stopwatch.o
-	g++ -o hw hw.o stopwatch.o ${OPT} ${GOOD}
+hw: hw.o stopwatch.o forker.o Splitter.o
+	g++ -o hw hw.o stopwatch.o forker.o Splitter.o ${OPT} ${GOOD}
 
 hw.o: hw.cpp rvec.o 
 	g++ -c $< ${OPT} ${GOOD}
@@ -24,6 +23,12 @@ stopwatch.o: stopwatch.cpp
 
 rvec.o: rvec.cpp
 	g++ -c $< ${OPT} ${GOOD}
+
+forker.o: forker.cpp forker.hpp
+	gcc -c $< ${OPT} ${GOOD}
+
+Splitter.o: Splitter.hpp Splitter.cpp
+	g++ -c Splitter.cpp
 
 clean:
 	@for dir in $(SUBDIRS); do \
