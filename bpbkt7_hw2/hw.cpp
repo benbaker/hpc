@@ -48,10 +48,10 @@ int main( int argc, const char **argv ){
    // Load data, D, from file into Shared Memory 
    const std::vector<std::vector<float>> D = Ben::floatVectorFromFile( argc, &argv[0], 362 );
    std::cout << "\n\nimport took " << timer.total() << " seconds\n";
-   std::cout << "D.size()="<< D.size() << " " << "D[0].size()=" << D[0].size() << "\n";
+   std::cout << "D.size()="<< D.size() << " " << "D[1].size()=" << D[1].size() << "\n";
 
 
-   for(int i = 0; i < 4; i++) {
+   for(int i = 0; i < 1; i++) {
       itWorked = Ben::circularForkSearch( s[i], P, D );
    }
 

@@ -79,6 +79,7 @@ namespace Ben {
 
             std::cout << "Child Process (" << pid << ")" << std::endl;  
 
+            sleep(3);
             // Do work
                
 
@@ -86,7 +87,7 @@ namespace Ben {
             for(int v = 0; v < 1000; v++){
 
             // Big V
-            std::cout << "\n# " << v << "\t" << "D[v]Size:" << D[v].size() << " circularSize: " << D[v].size() + s << "\n";
+            // std::cout << "\n# " << v << "\t" << "D[v]Size:" << D[v].size() << " circularSize: " << D[v].size() + s << "\n";
 
 
                // std::cout << "\n\nV[" << v << "] - circularSize: " << SV.size() + s << "\n";
