@@ -48,20 +48,17 @@
 
 #define OMGBIG std::numeric_limits<float>::infinity();
 
-struct SVDRT {
+struct Result {
    float x; 
    float y; 
    float distance;
-   int offset; 
-   bool operator<(SVDRT const &SVDR) const {
-     return distance > SVDR.distance;
-   }
+   int offset;
 };
 
 
 namespace Ben {
 
-   void circularSubvectorMatch(const int s
+   Result circularSubvectorMatch(const int s
       , const std::vector<float> key
       , const std::vector<float> V   );
 
@@ -91,16 +88,24 @@ namespace Ben {
          }
          if (0 == pid) { // Child
 
-            unsigned int share = D.size()/procs;
+            unsigned int share = floor(D.size()/procs);
+            unsigned int start = share*p;
+            unsigned int stop  = ( (p+2)*share < D.size() ? (p+1)*share : D.size() );
+         
+            // std::cout 
+            //    << " searchSize:  " << s 
+            //    << " \tprocess=" << p << "/" << procs << " "
+            //    << " \tshare: " << start << "-" << stop 
+            //    << std::endl;
 
-            std::cout 
-               << " searchSize:  " << s 
-               << " \tprocess=" << p << "/" << procs << " "
-               << " \tshare: " << share*p << "-" << share*(p+1) 
-               << std::endl;
+            Result tmp;
 
-            for(auto i = share*p; i < (p+1)*share; i++){
-               circularSubvectorMatch( s, searchVector, D.at(i) );
+            for(auto i = start; i < stop; i++){
+               
+               tmp = circularSubvectorMatch( s, searchVector, D.at(i) );
+
+               std::cout << "distance: " << tmp.distance;
+               std::cout << "\t offset: " << tmp.offset << std::endl;
             }
 
             // sleep(1);
@@ -123,9 +128,11 @@ namespace Ben {
 // Find matches on circular vector sets against key
 // -----------------------------------------------------------------------------
 
-   void circularSubvectorMatch(const int s
+   Result circularSubvectorMatch(const int s
       , const std::vector<float> key
       , const std::vector<float> V   ){
+
+      Result res;
 
       const int c = V.size() + s;
       const int keysize = key.size();
@@ -134,18 +141,29 @@ namespace Ben {
       size_t temp_offset, i, offset;
       float temp, dist;
 
-   for(temp_offset = 0; temp_offset < 360; temp_offset += 5){
-      temp = 0;
-      dist = OMGBIG;
-      for(i = 0; i < keysize; ++i){
-         temp += abs(V[((temp_offset+i)%360)] - key[i]);
-         if(temp >= dist) break;
+      for(temp_offset = 2; temp_offset < 360; temp_offset += 5){
+         
+         temp = 0;
+         dist = OMGBIG;
+
+         for(i = 0; i < keysize; ++i){
+            temp += abs(V[((temp_offset+i)%360)] - key[i]);
+            if(temp > dist) break;
+         }
+         
+
+// -----------------------------------------------------------------------------
+// YOU ARE HERE
+// -----------------------------------------------------------------------------
+
+
+         if(temp < dist){
+            dist = temp;
+            res.offset = temp_offset;
+            res.distance = temp;
+         }
       }
-      if(temp < dist){
-         offset = temp_offset;
-         dist = temp;
-      }
-   }
+      return res;
    }
 
 
