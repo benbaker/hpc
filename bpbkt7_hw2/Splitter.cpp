@@ -15,7 +15,7 @@ pid_t Splitter::spawn()
 	const pid_t pid = fork(); 
 	// std::cout << "Splitter::spawn, adding (" << pid << ") to process group, ";	
 	_processGroup.insert(pid);
-	std::cout << "Splitter::spawn, processGroup size is " << _processGroup.size() << std::endl;	
+	// std::cout << "Splitter::spawn, processGroup size is " << _processGroup.size() << std::endl;	
 	return pid;
 }
 
@@ -23,11 +23,11 @@ void Splitter::reap_all()
 {
 	do
 	{
-		std::cout << "Splitter::reap_all, processGroup size = " << _processGroup.size() << std::endl;		
+		// std::cout << "Splitter::reap_all, processGroup size = " << _processGroup.size() << std::endl;		
 		pid_t reapedPid = this->reap();
 		// std::cout << "Splitter::reap_all, reaped pid (" << reapedPid << ")" << std::endl;		
 		_processGroup.erase(reapedPid);
-		sleep(1); // just to slow things down
+		// sleep(1); // just to slow things down
 	}
 	while (!_processGroup.empty());
 
@@ -69,7 +69,7 @@ pid_t Splitter::reap_this(pid_t pid)
 		{
 			if (status > 0)
 			{
-				std::cerr << "SSplitter::reap_this(" << pid << "), Child process exited with non-zero status of " << WEXITSTATUS(status) << std::endl;
+				std::cerr << "Splitter::reap_this(" << pid << "), Child process exited with non-zero status of " << WEXITSTATUS(status) << std::endl;
 				continue;
 			}
 			else

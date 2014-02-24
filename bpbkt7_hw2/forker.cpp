@@ -25,6 +25,7 @@
 #include <iostream>
 #include <iterator>
 #include <algorithm>
+#include <limits>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,6 +45,8 @@
 
 #define handle_error(msg) \
         do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+#define OMGBIG std::numeric_limits<float>::infinity();
 
 struct SVDRT {
    float x; 
@@ -75,8 +78,6 @@ namespace Ben {
       std::vector<float> searchVector = generateRandomVector(s);
 
       unsigned int procs = boost::lexical_cast<unsigned int>(P);
-      std::cout << "Testing multifork using " << procs << " threads." << std::endl;
-      
       // std::cout << "D[v]" << D[v];
 
 
@@ -90,15 +91,17 @@ namespace Ben {
          }
          if (0 == pid) { // Child
 
-            std::cout << "\n#p=" << p << std::endl;
             unsigned int share = D.size()/procs;
+
+            std::cout 
+               << " searchSize:  " << s 
+               << " \tprocess=" << p << "/" << procs << " "
+               << " \tshare: " << share*p << "-" << share*(p+1) 
+               << std::endl;
 
             for(auto i = share*p; i < (p+1)*share; i++){
                circularSubvectorMatch( s, searchVector, D.at(i) );
             }
-
-
-
 
             // sleep(1);
             _exit(0);
@@ -124,10 +127,25 @@ namespace Ben {
       , const std::vector<float> key
       , const std::vector<float> V   ){
 
-      // std::cout << "V[v] - circularSize: " << V.size() + s << "\n";
+      const int c = V.size() + s;
+      const int keysize = key.size();
+      // std::cout << "\n\nkeysize: " << keysize << " " << c;
 
-      // for(int v = 0; v < V.size() + s; v++){
-      // }
+      size_t temp_offset, i, offset;
+      float temp, dist;
+
+   for(temp_offset = 0; temp_offset < 360; temp_offset += 5){
+      temp = 0;
+      dist = OMGBIG;
+      for(i = 0; i < keysize; ++i){
+         temp += abs(V[((temp_offset+i)%360)] - key[i]);
+         if(temp >= dist) break;
+      }
+      if(temp < dist){
+         offset = temp_offset;
+         dist = temp;
+      }
+   }
    }
 
 
@@ -151,7 +169,7 @@ namespace Ben {
       if (!(fin)){ std::cout << "File '" << argv[1] << "' not found!\n";exit(1);}
       std::string line;
       int element_count = 0; int i = 0; int j = chunkSize; int k=0;
-      std::vector<std::vector<float>> D(10000);
+      std::vector<std::vector<float>> D(1000);
       while(getline(fin, line)){
          std::stringstream ss(line);
          std::string num;
