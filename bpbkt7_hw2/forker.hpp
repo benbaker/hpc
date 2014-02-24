@@ -1,5 +1,13 @@
 namespace Ben {
 
+   int mmapTest();
+
+   void circularSubvectorMatch(const int s
+      , const std::vector<float> key
+      , const std::vector<float> V );
+
+
+
    int circularForkSearch( const int s, const int P
        , const std::vector<std::vector<float>> D );
 

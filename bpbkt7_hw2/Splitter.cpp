@@ -13,7 +13,7 @@ Splitter::~Splitter() { ; }
 pid_t Splitter::spawn()
 {
 	const pid_t pid = fork(); 
-	std::cout << "Splitter::spawn, adding (" << pid << ") to process group, ";	
+	// std::cout << "Splitter::spawn, adding (" << pid << ") to process group, ";	
 	_processGroup.insert(pid);
 	std::cout << "Splitter::spawn, processGroup size is " << _processGroup.size() << std::endl;	
 	return pid;
@@ -25,7 +25,7 @@ void Splitter::reap_all()
 	{
 		std::cout << "Splitter::reap_all, processGroup size = " << _processGroup.size() << std::endl;		
 		pid_t reapedPid = this->reap();
-		std::cout << "Splitter::reap_all, reaped pid (" << reapedPid << ")" << std::endl;		
+		// std::cout << "Splitter::reap_all, reaped pid (" << reapedPid << ")" << std::endl;		
 		_processGroup.erase(reapedPid);
 		sleep(1); // just to slow things down
 	}
@@ -44,7 +44,7 @@ pid_t Splitter::reap(pid_t pid)
 
 pid_t Splitter::reap_this(pid_t pid)
 {
-	std::cout << "Splitter::reap_this(" << pid << ")" << std::endl;
+	// std::cout << "Splitter::reap_this(" << pid << ")" << std::endl;
 	
 	// ============================== 
 	// All this code is boiler-plate	
@@ -74,7 +74,7 @@ pid_t Splitter::reap_this(pid_t pid)
 			}
 			else
 			{
-				std::cout << "Splitter::reap_this(" << pid << "), Child process exited with status of " << WEXITSTATUS(status) << std::endl;
+				// std::cout << "Splitter::reap_this(" << pid << "), Child process exited with status of " << WEXITSTATUS(status) << std::endl;
 				continue;
 			}
 		}
@@ -99,6 +99,6 @@ pid_t Splitter::reap_this(pid_t pid)
 	return returnPid;
 }
 
-}; // END of scottgs Namespace
+}; // END of Ben Namespace
 
 
