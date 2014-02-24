@@ -1,0 +1,5 @@
+/bin/sh: line 1: 25964 Killed                  ./hw1_analyze > p1.out
+
+real	4m0.016s
+user	3m59.706s
+sys	0m0.257s
