@@ -13,6 +13,7 @@
 #include <limits>
 #include <numeric>
 #include <sstream>
+#include <ostream>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -28,45 +29,44 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
-// -----------------------------------------------------------------------------
-// Instantiate text vector, Big V vector, and array of vector sizes.
-// -----------------------------------------------------------------------------
+static const int s[] = {9,11,17,29}; // search sizes
 
-static const int s[] = {9,11,17,29};
-
-int P=30;
-int itWorked;
-
-// -----------------------------------------------------------------------------
-// Main
-// -----------------------------------------------------------------------------
+int P = 3;
+int N = 3;
+int chunkSize  = 362;
+int blockSize  = 100;
+int resultSize = 10;
 
 
-int main( int argc, const char **argv ){ 
+
+int main( int argc, const char **argv){ 
 
    Stopwatch timer;
 
-   // Load data, D, from file into Shared Memory 
-   const std::vector<std::vector<float>> D = Ben::floatVectorFromFile( argc, &argv[0], 362 );
-   std::cout << "\nimport took " << timer.total() << " seconds\n";
-   std::cout << "D.size()="<< D.size() << " " << "D[1].size()=" << D[0].size() << "\n";
+   // 1:Load data, D, from file into Shared Memory 
+
+   const std::vector<std::vector<float>> D = Ben::floatVectorFromFile( argc, &argv[0], chunkSize, blockSize );
+   std::cout << "import took " << timer.total() << " seconds" << std::endl;
+   std::cout << "D.size()="<< D.size() << " " << "D[1].size()=" << D[1].size() << std::endl;
+
+
+   // 2: for Each vector size 9;11;17;29 do
+   // 3: Run Test Vector against circularSubvectorMatch(Ts, D=P, N).
 
    for(int i = 0; i < 4; i++) {
-      itWorked = Ben::circularForkSearch( s[i], P, D );
+      std::cout << "searchSize: " << s[i] << std::endl;
+      Ben::circularForkSearch( s[i], P, resultSize, D );
    }
 
-
-   // Ben::mmapTest();
+   // 11: Report Search Time for v
 
    timer.stop();
-
-   // std::cout << (itWorked ? "Yay!" : "Doh!!");
-   std::cout << "\n\noperation took " << timer.total() << " seconds\n";
-
+   std::cout << "operation took " << timer.total() << " seconds\n";
 	return 0;
 }
 
 
+// for each size s, print out top ten
 
 
 // -----------------------------------------------------------------------------

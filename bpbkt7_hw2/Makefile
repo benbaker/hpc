@@ -13,7 +13,7 @@ all: hw
 #	g++ $@ -o $< -std=c++0x
 
 hw: hw.o stopwatch.o forker.o Splitter.o
-	g++ -o hw hw.o stopwatch.o forker.o Splitter.o ${OPT} ${GOOD}
+	g++ -o hw hw.o stopwatch.o forker.o Splitter.o ${OPT} ${GOOD} ${CFLAGS}
 
 hw.o: hw.cpp rvec.o 
 	g++ -c $< ${OPT} ${GOOD}
@@ -35,4 +35,3 @@ clean:
 		$(MAKE) -C $$dir clean; \
 	done
 	@rm -rf *.o cachegrind* hw 2>/dev/null || true
-
