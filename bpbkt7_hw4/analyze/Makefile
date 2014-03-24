@@ -1,12 +1,12 @@
 # set this to what I want
-OTHER_FLAGS=-std=c++0x
+OTHER_FLAGS=-std=c++0x -lpthread
 
 # Standard all target
 all: hw1_analyze
 
 # HW 1 Analysis Code
 hw1_analyze: hw1_analyze.o ../src/MatrixMultiply.o
-	g++ -o hw1_analyze hw1_analyze.o ../src/MatrixMultiply.o
+	g++ -lpthread -o hw1_analyze hw1_analyze.o ../src/MatrixMultiply.o
 
 hw1_analyze.o:	hw1_analyze.cpp 
 	g++ ${OTHER_FLAGS} -Wall -c hw1_analyze.cpp

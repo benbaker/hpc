@@ -110,7 +110,7 @@ struct Result {
       auto it = resultSet.begin();
       while(r < (*it)) ++it;
       resultSet.insert(it, r);
-      if(resultSet.size() > resultSize){
+      if(resultSet.size() > resultSize+1){
          resultSet.pop_front();
          return 1;
       }
@@ -136,10 +136,8 @@ struct Result {
          for(i = 0; i < keysize; i++){
             t = ((temp_offset+i) % 360);
             temp += fabs( V[2+t] - key[i] );
-
             if(temp > dist) break;
          }
-
          if(temp < dist){
             dist = temp;
             res = makeResult(V[0],V[1],dist,temp_offset);
@@ -166,20 +164,24 @@ struct Result {
 // Forks and find matches on circular vector sets.
 // -----------------------------------------------------------------------------
 
-   int circularForkSearch( const int s, const int P, const int N
+   int circularForkSearch( const int s, const int P, const int N, const short test
        , const std::vector<std::vector<float>> D ){
 
       unsigned int procs = boost::lexical_cast<unsigned int>(P);
+
+      // set shared memory stuff
 
       int shmid;
       int sharedIndexID;
       Result *sharedResults;
       unsigned long *sharedIndex;
-
-      key_t shmKey = 86753309; key_t shmKey2 = 313337;
+      
+      key_t shmKey = 12312*N*P+test; key_t shmKey2 = 123123*N*P+test;
 
       sharedIndexID = shmget(shmKey2, N * sizeof(unsigned long), IPC_CREAT | 0666);
       sharedIndex = (unsigned long *) shmat(sharedIndexID, NULL, 0);
+
+      // create shared memory object
 
        if ((shmid = shmget(shmKey, N * sizeof(Result), IPC_CREAT | 0666)) < 0) {
            std::cerr<<"shmget";
@@ -189,14 +191,32 @@ struct Result {
       sharedResults = (Result *) shmat(shmid, NULL, 0);
       *sharedIndex = 0;
 
+      // fork with grants splitter
       Ben::Splitter splitter;
       pid_t pid;
 
-      std::vector<float> searchVector = getSearchVector(s);
 
+      // get test vectors if "test" and 30 random if not
+      std::vector<std::vector<float>> searchVector(s*30);
+      int vecs = 0;
 
+      if (test == 1){
 
-      for (int p = 0; p < procs ; ++p) { 
+        std::vector<float> tmp(s);
+        // tmp = getSearchVector(s);
+        tmp = generateRandomVector(s);
+        searchVector.at(vecs++) = tmp;
+
+      } else {
+        
+        while(vecs < 30){
+          std::vector<float> tmp(s);
+          tmp = generateRandomVector(s);
+          searchVector.at(vecs++)=tmp;
+        }
+      }
+
+      for (int p = 0; p < procs ; ++p) {
 
          pid_t pid = splitter.spawn();
          if (pid < 0) { std::cerr << "Fork failed" << std::endl; break;}
@@ -207,52 +227,66 @@ struct Result {
                , start = (share*p)
                , stop  = p < procs-1 ? (p+1)*share-1 : D.size()-1;
          
-            std::cout << "share: " << start << "-" << stop << std::endl;
+            // std::cout << "share: " << start << "-" << stop << std::endl;
             std::deque<Result> resultSet (N);
             Result filler;
             filler.distance=99999;
             std::fill (resultSet.begin(),resultSet.end(),filler);
 
-            Result tmp;
             for(auto i = start; i <= stop; i++){
-               tmp = circularSubvectorMatch( s, searchVector, D.at(i) );
-               topInsert(tmp, resultSet, N);
 
+              if (test == 1){
+
+                    Result tmp;
+                    tmp = circularSubvectorMatch( s, searchVector.at(0), D.at(i) );
+                    topInsert(tmp, resultSet, N);
+
+                } else {
+
+                  for(int vc = 0; vc < 30; vc++){
+                      Result tmp;
+                      tmp = circularSubvectorMatch( s, searchVector.at(vc), D.at(i) );
+                      topInsert(tmp, resultSet, N);
+                  }
+              }
             }
 
             for(auto iter = resultSet.begin(); iter < resultSet.end(); iter++){
-
                (*sharedIndex) +=1;
                sharedResults[(*sharedIndex)] = (*iter);
             }
 
-            sleep(1);
             exit(0);
 
          } else { //parent
 
-            // wait(NULL);
-
          }
-            splitter.reap_all(); 
+
+          splitter.reap_all(); 
       }
 
 
       std::deque<Result> orderedResultSet (N);
       Result filler;
       filler.distance=99999;
-      std::fill (orderedResultSet.begin(),orderedResultSet.end(),filler);
+      std::fill(orderedResultSet.begin(),orderedResultSet.end(),filler);
+
 
       int f = N*P;
       Result tmp;
+      int i = 0;
 
-      while (f--){
+      while (i++ <= f){
          tmp = sharedResults[f];
          topInsert(tmp, orderedResultSet, N);
       }
 
       // std::cout << (*sharedIndex) << std::endl;
+
       printResults(orderedResultSet, s);
+
+      shmdt(sharedResults);
+      shmdt(sharedIndex);
 
       return 1;
    }
@@ -273,6 +307,11 @@ struct Result {
       // Instantiate things
       if (!(fin)){ std::cout << "File '" << argv[1] << "' not found!\n";exit(1);}
       std::string line;int element_count = 0; int i = 0; int j = chunkSize; int k=0;
+      
+      
+
+      // Here I set the size of the thing the stupid way.
+
       std::vector<std::vector<float>> D(1000);
 
       // Loop and consume

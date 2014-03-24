@@ -31,7 +31,7 @@
 
 static const int s[] = {9,11,17,29}; // search sizes
 
-int P = 3;
+int P = 1;
 int N = 3;
 int chunkSize  = 362;
 int blockSize  = 100;
@@ -43,26 +43,46 @@ int main( int argc, const char **argv){
 
    Stopwatch timer;
 
+   const int P =  atoi(argv[2]);
+   const int N =  atoi(argv[3]);
+
    // 1:Load data, D, from file into Shared Memory 
 
    const std::vector<std::vector<float>> D = Ben::floatVectorFromFile( argc, &argv[0], chunkSize, blockSize );
-   std::cout << "import took " << timer.total() << " seconds" << std::endl;
-   std::cout << "D.size()="<< D.size() << " " << "D[1].size()=" << D[1].size() << std::endl;
+   // std::cout << "import took " << timer.total() << " seconds" << std::endl;
+   // std::cout << "D.size()="<< D.size() << " " << "D[1].size()=" << D[1].size() << std::endl;
 
 
    // 2: for Each vector size 9;11;17;29 do
    // 3: Run Test Vector against circularSubvectorMatch(Ts, D=P, N).
 
+   int test = 1;
    for(int i = 0; i < 4; i++) {
       std::cout << "searchSize: " << s[i] << std::endl;
-      Ben::circularForkSearch( s[i], P, resultSize, D );
+      Ben::circularForkSearch( s[i], P, N, test, D );
    }
+
+   std::cout << "\nTest vectors took " << timer.total() << " seconds\n\n" << std::endl;
+
+   test = 0;
+
+
+   timer.start();
+
+     // 4: Generate V as a set of 30 random vectors of length s
+     for(int i = 0; i < 4; i++) {
+        std::cout << "searchSize: " << s[i] << std::endl;
+        Ben::circularForkSearch( s[i], P, N, test, D );
+     }
+   std::cout << "\n30 random vector operation took " << timer.total() << " seconds\n";
+
+   std::cout << "Using " << P << " processes to get top " << N << std::endl;
 
    // 11: Report Search Time for v
 
    timer.stop();
-   std::cout << "operation took " << timer.total() << " seconds\n";
-	return 0;
+   // std::cout << "operation took " << timer.total() << " seconds\n";
+	 return 0;
 }
 
 
@@ -130,11 +150,6 @@ int main( int argc, const char **argv){
 // so then you can just print them like:
 // std::cout << “this data point is: “ << *sv_pntr; or whatever.
 
-// -----------------------------------------------------------------------------
-// Classes
-// -----------------------------------------------------------------------------
-
-
 // load D -> shared memory
 // for each vector sizes 9 11 17 29
 // test vector against circularSubvectorMatch(Ts, D=P, N)
@@ -143,7 +158,7 @@ int main( int argc, const char **argv){
 // circularsubvectormatch()
 
 // -----------------------------------------------------------------------------
-// Overzealous oopiness to revisit
+// Overzealous oopiness to revisit later maybe
 // -----------------------------------------------------------------------------
 
 // class SearchVector {

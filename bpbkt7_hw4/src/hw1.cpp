@@ -4,6 +4,13 @@
 #include <cstdlib>
 #include <algorithm>
 
+#include <numeric>
+#include <stdio.h>
+#include <sys/types.h>
+#include <pthread.h>
+
+#include <boost/lexical_cast.hpp>
+
 #include "FloatMatrix.hpp"
 #include "MatrixMultiply.hpp"
 
@@ -13,13 +20,13 @@ void initRandomMatrix(scottgs::FloatMatrix& m);
 
 int main(int argc, char * argv[])
 {
-	std::cout << "Homework 1" << std::endl 
-		  << "Ben Baker (bpbkt7)" << std::endl;  // CHANGE TO YOUR name AND pawprint
+	std::cout << "Homework 4" << std::endl 
+		  << "Ben Baker (bpbkt)" << std::endl;  // CHANGE TO YOUR name AND pawprint
 
 	// ---------------------------------------------
 	// BEGIN: Self Test Portion
 	// ---------------------------------------------
-	std::cout << "Running Self Test " << std::endl
+	std::cout << "Running Self Test" << std::endl
 		  << "-----------------" << std::endl;
 	scottgs::FloatMatrix l42(4, 2);
 	l42(0,0) = 2; l42(0,1) = 3;

@@ -1,5 +1,5 @@
 OPT = -std=c++0x
-TEST = ./hw /content/cs/hpc/data/sp14_1k.csv
+TEST = ./hw /content/cs/hpc/data/sp14_1k.csv 1 25
 OTHER_FLAGS=$(ENV_HPC_OPTS) 
 GOOD = -O -funroll-loops -march=native -fstrict-aliasing
 

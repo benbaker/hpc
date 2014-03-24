@@ -3,6 +3,11 @@
 #include <algorithm>
 #include <chrono>
 
+#include <numeric>
+#include <stdio.h>
+#include <sys/types.h>
+#include <pthread.h>
+
 #include <boost/numeric/ublas/io.hpp>
 
 #include "../src/FloatMatrix.hpp"
@@ -10,8 +15,7 @@
 
 void initRandomMatrix(scottgs::FloatMatrix& m);
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char * argv[]) {
 	
 	// ---------------------------------------------
 	// BEGIN: Timing Analysis
@@ -28,9 +32,9 @@ int main(int argc, char * argv[])
 	// Build up a set of test matrix-pair sizes
 	// ---------------------------------------------
 	std::vector<std::pair<std::pair<unsigned short,unsigned short>, std::pair<unsigned short,unsigned short> > > testList;
+
 	testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(50,40),
 					   std::pair<unsigned short,unsigned short>(40,60)) );
-
 
 	testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(60,50),
 					   std::pair<unsigned short,unsigned short>(50,70)) );
@@ -40,22 +44,22 @@ int main(int argc, char * argv[])
 
 	testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(80,70),
 					   std::pair<unsigned short,unsigned short>(70,90)) );
-	testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(90,80),
-					   std::pair<unsigned short,unsigned short>(80,100)) );
 
-	testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(100,90),
-					   std::pair<unsigned short,unsigned short>(90,110)) );
+	// testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(90,80),
+					   // std::pair<unsigned short,unsigned short>(80,100)) );
+
+	// testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(100,90),
+					   // std::pair<unsigned short,unsigned short>(90,110)) );
 					   
-	testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(200,90),
-					   std::pair<unsigned short,unsigned short>(90,220)) );
+	// testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(200,90),
+	// 				   std::pair<unsigned short,unsigned short>(90,220)) );
 
-	testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(200,180),
-					   std::pair<unsigned short,unsigned short>(180,220)) );
-/*
+	// testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(200,180),
+					   // std::pair<unsigned short,unsigned short>(180,220)) );
 
-	testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(400,360),
-					   std::pair<unsigned short,unsigned short>(360,240)) );
-*/
+	// testList.push_back( std::make_pair(std::pair<unsigned short,unsigned short>(400,360),
+	// 				   std::pair<unsigned short,unsigned short>(360,240)) );
+
 	// ***********************************
 	// Test functor
 	//	Direct matrix element access
